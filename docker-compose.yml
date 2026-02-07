@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: geotrack-postgres
+    environment:
+      POSTGRES_USER: geotrack
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: geotrack_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geotrack -d geotrack_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: geotrack-api
+    working_dir: /app
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=geotrack_db;Username=geotrack;Password=password
+    volumes:
+      - .:/app
+    command: dotnet watch run --project src/GeoTrack.Api/GeoTrack.Api.csproj --urls http://0.0.0.0:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ui:
+    image: node:20-alpine
+    container_name: geotrack-ui
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src/GeoTrack.UI:/app
+    command: sh -c "npm install && npm run dev -- --host"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+
+volumes:
+  postgres_data:
