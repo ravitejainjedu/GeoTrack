@@ -1,0 +1,15 @@
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\bin\Debug\net10.0\GeoTrack.Application.deps.json
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\bin\Debug\net10.0\GeoTrack.Application.dll
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\bin\Debug\net10.0\GeoTrack.Application.pdb
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\bin\Debug\net10.0\GeoTrack.Domain.dll
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\bin\Debug\net10.0\GeoTrack.Domain.pdb
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.csproj.AssemblyReference.cache
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.AssemblyInfoInputs.cache
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.AssemblyInfo.cs
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.csproj.CoreCompileInputs.cache
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.4095FF30.Up2Date
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.dll
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\refint\GeoTrack.Application.dll
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\GeoTrack.Application.pdb
+C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\Debug\net10.0\ref\GeoTrack.Application.dll

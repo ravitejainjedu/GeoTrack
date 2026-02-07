@@ -1,4 +1,4 @@
-const https = require('http'); // using http for localhost
+const http = require('http'); // using http for localhost
 
 const API_URL = process.env.API_URL || 'http://localhost:5000/api/telemetry';
 const DEVICE_COUNT = 5;
@@ -23,7 +23,7 @@ function move(device) {
   // Simple lat/lon update (approximate)
   const dist = speed * (INTERVAL_MS / 1000) / 111000; // degrees
   const rad = device.heading * Math.PI / 180;
-  
+
   device.lat += dist * Math.cos(rad);
   device.lon += dist * Math.sin(rad);
 
@@ -52,7 +52,7 @@ async function sendTelemetry(payload) {
       }
     };
 
-    const req = https.request(options, (res) => {
+    const req = http.request(options, (res) => {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         resolve();
       } else {
@@ -72,12 +72,12 @@ async function run() {
 
   setInterval(async () => {
     const payloads = devices.map(move);
-    
+
     // Send individually or batch? Requirements say single or batch. 
     // Let's send individually for now to test load, or batch if API supports it.
     // The simulator requirement didn't specify, but "Ingest GPS points reliably (single + batch)" suggests both.
     // Let's send single points for now to create more traffic.
-    
+
     for (const p of payloads) {
       try {
         await sendTelemetry(p);
