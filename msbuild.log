@@ -1,0 +1,89 @@
+Build started 2/7/2026 1:00:35 PM.
+Logging verbosity is set to: Normal.     1>Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" on node 1 (Restore target(s)).
+     1>_GetAllRestoreProjectPathItems:
+         Determining projects to restore...
+     1>Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" (1) is building "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\GeoTrack.Application.csproj" (2:4) on node 1 (_GenerateProjectRestoreGraph target(s)).
+     2>AddPrunePackageReferences:
+         Loading prune package data from PrunePackageData folder
+         Failed to load prune package data from PrunePackageData folder, loading from targeting packs instead
+         Looking for targeting packs in C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref
+         Pack directories found: C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.1
+         Found package overrides file C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.1\data\PackageOverrides.txt
+     1>Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" (1) is building "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\GeoTrack.Domain.csproj" (3:5) on node 2 (_GenerateProjectRestoreGraph target(s)).
+     3>AddPrunePackageReferences:
+         Loading prune package data from PrunePackageData folder
+         Failed to load prune package data from PrunePackageData folder, loading from targeting packs instead
+         Looking for targeting packs in C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref
+         Pack directories found: C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.1
+         Found package overrides file C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.1\data\PackageOverrides.txt
+     2>Done Building Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\GeoTrack.Application.csproj" (_GenerateProjectRestoreGraph target(s)).
+     3>Done Building Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\GeoTrack.Domain.csproj" (_GenerateProjectRestoreGraph target(s)).
+     1>Restore:
+         X.509 certificate chain validation will use the default trust store selected by .NET for code signing.
+         X.509 certificate chain validation will use the default trust store selected by .NET for timestamping.
+         Assets file has not changed. Skipping assets file writing. Path: C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\obj\project.assets.json
+         Assets file has not changed. Skipping assets file writing. Path: C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\project.assets.json
+         Assets file has not changed. Skipping assets file writing. Path: C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\obj\project.assets.json
+         Restored C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\GeoTrack.Domain.csproj (in 154 ms).
+         Restored C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\GeoTrack.Application.csproj (in 156 ms).
+         Restored C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj (in 156 ms).
+         
+         NuGet Config files used:
+             C:\Users\injed\AppData\Roaming\NuGet\NuGet.Config
+             C:\Program Files (x86)\NuGet\Config\Microsoft.VisualStudio.FallbackLocation.config
+             C:\Program Files (x86)\NuGet\Config\Microsoft.VisualStudio.Offline.config
+         
+         Feeds used:
+             https://api.nuget.org/v3/index.json
+             C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\
+             C:\Program Files\dotnet\library-packs
+         All projects are up-to-date for restore.
+     1>Done Building Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" (Restore target(s)).
+   1:7>Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" on node 2 (default targets).
+   1:7>Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" (1:7) is building "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\GeoTrack.Domain.csproj" (3:7) on node 1 (default targets).
+     3>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj\Debug\net10.0\GeoTrack.Domain.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         GeoTrack.Domain -> C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\bin\Debug\net10.0\GeoTrack.Domain.dll
+     3>Done Building Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\GeoTrack.Domain.csproj" (default targets).
+   1:7>Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" (1:7) is building "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\GeoTrack.Application.csproj" (2:6) on node 2 (default targets).
+     2>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj\Debug\net10.0\GeoTrack.Application.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         GeoTrack.Application -> C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\bin\Debug\net10.0\GeoTrack.Application.dll
+     2>Done Building Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Application\GeoTrack.Application.csproj" (default targets).
+     1>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj\Debug\net10.0\GeoTrack.Infrastructure.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         GeoTrack.Infrastructure -> C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\bin\Debug\net10.0\GeoTrack.Infrastructure.dll
+     1>Done Building Project "C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Infrastructure\GeoTrack.Infrastructure.csproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.53

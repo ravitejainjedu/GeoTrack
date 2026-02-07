@@ -1,8 +1,0 @@
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.csproj.AssemblyReference.cache
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\rpswa.dswa.cache.json
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.GeneratedMSBuildEditorConfig.editorconfig
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.AssemblyInfoInputs.cache
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.AssemblyInfo.cs
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.csproj.CoreCompileInputs.cache
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.MvcApplicationPartsAssemblyInfo.cs
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Api\obj\Debug\net10.0\GeoTrack.Api.MvcApplicationPartsAssemblyInfo.cache
