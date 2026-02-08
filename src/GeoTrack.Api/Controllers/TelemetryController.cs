@@ -24,6 +24,7 @@ public class TelemetryController : ControllerBase
     }
 
     [HttpPost]
+    [RequestSizeLimit(10 * 1024 * 1024)] // 10MB
     public async Task<IActionResult> Ingest([FromBody] System.Text.Json.JsonElement payload)
     {
         IEnumerable<TelemetryDto> points;

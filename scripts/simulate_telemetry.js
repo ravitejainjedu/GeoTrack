@@ -1,8 +1,15 @@
 const http = require('http'); // using http for localhost
 
-const API_URL = process.env.API_URL || 'http://localhost:5000/api/telemetry';
+const API_URL = process.env.API_URL || 'http://127.0.0.1:5000/api/telemetry';
 const DEVICE_COUNT = 5;
 const INTERVAL_MS = 1000;
+
+// Keep-Alive Agent
+const agent = new http.Agent({
+  keepAlive: true,
+  maxSockets: 10,
+  timeout: 5000 // Socket timeout
+});
 
 // Initial positions (approx Dallas, TX)
 const devices = Array.from({ length: DEVICE_COUNT }, (_, i) => ({
@@ -38,30 +45,42 @@ function move(device) {
   };
 }
 
-async function sendTelemetry(payload) {
-  return new Promise((resolve, reject) => {
-    const url = new URL(API_URL);
-    const options = {
-      hostname: url.hostname,
-      port: url.port,
-      path: url.pathname,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(JSON.stringify(payload))
-      }
-    };
+function sendTelemetry(payload) {
+  const data = JSON.stringify(payload);
+  const url = new URL(API_URL); // Use the global API_URL constant
 
-    const req = http.request(options, (res) => {
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        resolve();
-      } else {
-        reject(new Error(`Status Code: ${res.statusCode}`));
-      }
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(data),
+      'Connection': 'keep-alive'
+    },
+    agent: agent,
+    timeout: 5000 // Request timeout
+  };
+
+  return new Promise((resolve, reject) => {
+    const req = http.request(url, options, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve();
+        } else {
+          // Log response body for errors (e.g. 429 or 500)
+          reject(new Error(`Status Code: ${res.statusCode} - Body: ${body}`));
+        }
+      });
     });
 
     req.on('error', (e) => reject(e));
-    req.write(JSON.stringify(payload));
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Request Timeout'));
+    });
+
+    req.write(data);
     req.end();
   });
 }
@@ -73,18 +92,11 @@ async function run() {
   setInterval(async () => {
     const payloads = devices.map(move);
 
-    // Send individually or batch? Requirements say single or batch. 
-    // Let's send individually for now to test load, or batch if API supports it.
-    // The simulator requirement didn't specify, but "Ingest GPS points reliably (single + batch)" suggests both.
-    // Let's send single points for now to create more traffic.
-
-    for (const p of payloads) {
-      try {
-        await sendTelemetry(p);
-        // console.log(`Sent ${p.deviceId}`);
-      } catch (err) {
-        console.error(`Failed ${p.deviceId}: ${err.message}`);
-      }
+    try {
+      await sendTelemetry(payloads);
+      // console.log(`Sent batch of ${payloads.length}`);
+    } catch (err) {
+      console.error(`Failed batch: ${err.message}`);
     }
   }, INTERVAL_MS);
 }

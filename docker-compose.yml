@@ -25,9 +25,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=geotrack_db;Username=geotrack;Password=password
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER=1
     volumes:
       - .:/app
-    command: dotnet watch run --project src/GeoTrack.Api/GeoTrack.Api.csproj --urls http://0.0.0.0:8080
+    command: dotnet run --project src/GeoTrack.Api/GeoTrack.Api.csproj --urls http://0.0.0.0:8080
     depends_on:
       postgres:
         condition: service_healthy

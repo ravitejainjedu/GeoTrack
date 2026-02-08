@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using GeoTrack.Application.Common.Interfaces;
 using GeoTrack.Application.DTOs;
 using GeoTrack.Domain.Entities;
 using GeoTrack.Application.Common.Interfaces;
@@ -18,18 +19,21 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
     private readonly IGeoTrackDbContext _context;
     private readonly IValidator<TelemetryDto> _validator;
     private readonly ILogger<IngestTelemetryHandler> _logger;
+    private readonly ITelemetryBroadcaster _broadcaster;
 
-    public IngestTelemetryHandler(IGeoTrackDbContext context, IValidator<TelemetryDto> validator, ILogger<IngestTelemetryHandler> logger)
+    public IngestTelemetryHandler(IGeoTrackDbContext context, IValidator<TelemetryDto> validator, ILogger<IngestTelemetryHandler> logger, ITelemetryBroadcaster broadcaster)
     {
         _context = context;
         _validator = validator;
         _logger = logger;
+        _broadcaster = broadcaster;
     }
 
     public async Task<IngestTelemetryResult> Handle(IngestTelemetryCommand request, CancellationToken cancellationToken)
     {
-        var validPoints = new List<TelemetryDto>();
+        // Validation
         int rejectedCount = 0;
+        var validPoints = new List<TelemetryDto>();
 
         // 1. Validate all points
         foreach (var point in request.Points)
@@ -189,8 +193,36 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
             await _context.Locations.AddRangeAsync(newLocations, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             insertedCount = newLocations.Count;
+
+            // Broadcast to realtime clients (fire and forget / optimization: could be parallel)
+            // Broadcast to realtime clients (fire and forget / optimization: could be parallel)
+            // Create a map of inserted locations to their original ExternalId for fast lookup
+            var deviceIdMap = existingDevices.Values.ToDictionary(d => d.Id, d => d.ExternalId);
+            
+            foreach (var loc in newLocations)
+            {
+                if (deviceIdMap.TryGetValue(loc.DeviceId, out var externalId))
+                {
+                    var dto = new TelemetryDto
+                    {
+                        DeviceId = externalId,
+                        Timestamp = loc.Timestamp,
+                        Lat = loc.Lat,
+                        Lon = loc.Lon,
+                        Speed = loc.Speed,
+                        Heading = loc.Heading,
+                        Accuracy = loc.Accuracy
+                    };
+                    await _broadcaster.BroadcastAsync(externalId, dto);
+                }
+            }
         }
 
         return new IngestTelemetryResult(insertedCount, payloadDuplicates + dbDuplicates, rejectedCount);
     }
+}
+
+public class RateLimitExceededException : Exception
+{
+    public RateLimitExceededException(string message) : base(message) { }
 }
