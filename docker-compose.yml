@@ -17,19 +17,17 @@ services:
       retries: 5
 
   api:
-    image: mcr.microsoft.com/dotnet/sdk:9.0
+    build:
+      context: .
+      dockerfile: src/GeoTrack.Api/Dockerfile
     container_name: geotrack-api
-    working_dir: /app
+    restart: unless-stopped
     ports:
       - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=geotrack_db;Username=geotrack;Password=password
-      - DOTNET_USE_POLLING_FILE_WATCHER=1
-      - DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER=1
-    volumes:
-      - .:/app
-    command: dotnet run --project src/GeoTrack.Api/GeoTrack.Api.csproj --urls http://0.0.0.0:8080
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,14 +36,15 @@ services:
     image: node:20-alpine
     container_name: geotrack-ui
     working_dir: /app
+    restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
       - ./src/GeoTrack.UI:/app
       - ui_node_modules:/app/node_modules
-    command: sh -c "npm ci && npm run dev -- --host"
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173 --strictPort"
     environment:
-      - VITE_API_URL=http://localhost:5000
+      - VITE_API_URL=http://127.0.0.1:5000
 
 volumes:
   postgres_data:

@@ -21,6 +21,13 @@ public class IngestionThrottlingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        // Skip throttling for OPTIONS preflight requests
+        if (HttpMethods.IsOptions(context.Request.Method))
+        {
+            await _next(context);
+            return;
+        }
+
         // Check if backpressure is needed (gate full)
         if (!await _gate.TryEnterAsync(200)) // 200ms timeout
         {

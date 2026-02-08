@@ -1,12 +1,24 @@
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\bin\Debug\net9.0\GeoTrack.Domain.deps.json
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\bin\Debug\net9.0\GeoTrack.Domain.dll
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\bin\Debug\net9.0\GeoTrack.Domain.pdb
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.GeneratedMSBuildEditorConfig.editorconfig
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.AssemblyInfoInputs.cache
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.AssemblyInfo.cs
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.csproj.CoreCompileInputs.cache
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.sourcelink.json
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.dll
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\refint\GeoTrack.Domain.dll
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\GeoTrack.Domain.pdb
-C:\Ravi Teja files\Projects\GeoTrack\src\GeoTrack.Domain\obj\Debug\net9.0\ref\GeoTrack.Domain.dll
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/bin/Debug/net9.0/GeoTrack.Domain.deps.json
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/bin/Debug/net9.0/GeoTrack.Domain.dll
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/bin/Debug/net9.0/GeoTrack.Domain.pdb
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.AssemblyInfoInputs.cache
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.AssemblyInfo.cs
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.csproj.CoreCompileInputs.cache
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.sourcelink.json
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.dll
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/refint/GeoTrack.Domain.dll
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.pdb
+C:/Ravi Teja files/Projects/GeoTrack/src/GeoTrack.Domain/obj/Debug/net9.0/ref/GeoTrack.Domain.dll
+/app/src/GeoTrack.Domain/bin/Debug/net9.0/GeoTrack.Domain.deps.json
+/app/src/GeoTrack.Domain/bin/Debug/net9.0/GeoTrack.Domain.dll
+/app/src/GeoTrack.Domain/bin/Debug/net9.0/GeoTrack.Domain.pdb
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.AssemblyInfoInputs.cache
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.AssemblyInfo.cs
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.csproj.CoreCompileInputs.cache
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.sourcelink.json
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.dll
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/refint/GeoTrack.Domain.dll
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/GeoTrack.Domain.pdb
+/app/src/GeoTrack.Domain/obj/Debug/net9.0/ref/GeoTrack.Domain.dll

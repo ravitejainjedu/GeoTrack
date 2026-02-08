@@ -1,0 +1,29 @@
+# .NET
+bin/
+obj/
+.vs/
+TestResults/
+*.user
+*.suo
+
+# Node/Vite
+node_modules/
+dist/
+.vite/
+
+# Env/secrets
+.env
+.env.*
+*.pfx
+*.snk
+secrets.json
+
+# IDE/OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Coverage/logs
+coverage/
+*.log

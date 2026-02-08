@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GeoTrack.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5e686e759ab31fd8bfcfcb45fe93482ae061a38")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f95165ab7e429ea589ffdb29a1a14bffc847ff31")]
 [assembly: System.Reflection.AssemblyProductAttribute("GeoTrack.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GeoTrack.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

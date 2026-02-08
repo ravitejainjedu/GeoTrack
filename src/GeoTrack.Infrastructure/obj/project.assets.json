@@ -856,44 +856,36 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\injed\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "/root/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Infrastructure\\GeoTrack.Infrastructure.csproj",
+      "projectUniqueName": "/app/src/GeoTrack.Infrastructure/GeoTrack.Infrastructure.csproj",
       "projectName": "GeoTrack.Infrastructure",
-      "projectPath": "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Infrastructure\\GeoTrack.Infrastructure.csproj",
-      "packagesPath": "C:\\Users\\injed\\.nuget\\packages\\",
-      "outputPath": "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Infrastructure\\obj\\",
+      "projectPath": "/app/src/GeoTrack.Infrastructure/GeoTrack.Infrastructure.csproj",
+      "packagesPath": "/root/.nuget/packages/",
+      "outputPath": "/app/src/GeoTrack.Infrastructure/obj/",
       "projectStyle": "PackageReference",
       "centralPackageVersionsManagementEnabled": true,
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\injed\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/root/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Application\\GeoTrack.Application.csproj": {
-              "projectPath": "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Application\\GeoTrack.Application.csproj"
+            "/app/src/GeoTrack.Application/GeoTrack.Application.csproj": {
+              "projectPath": "/app/src/GeoTrack.Application/GeoTrack.Application.csproj"
             },
-            "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Domain\\GeoTrack.Domain.csproj": {
-              "projectPath": "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Domain\\GeoTrack.Domain.csproj"
+            "/app/src/GeoTrack.Domain/GeoTrack.Domain.csproj": {
+              "projectPath": "/app/src/GeoTrack.Domain/GeoTrack.Domain.csproj"
             }
           }
         }
@@ -908,7 +900,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net9.0": {
@@ -928,6 +920,7 @@
           "MediatR": "12.2.0",
           "Microsoft.AspNetCore.Mvc.Testing": "9.0.1",
           "Microsoft.AspNetCore.OpenApi": "9.0.1",
+          "Microsoft.AspNetCore.SignalR.Client": "9.0.1",
           "Microsoft.EntityFrameworkCore": "9.0.1",
           "Microsoft.EntityFrameworkCore.Design": "9.0.1",
           "Microsoft.EntityFrameworkCore.Relational": "9.0.1",
@@ -956,7 +949,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.310/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

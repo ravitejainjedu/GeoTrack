@@ -8,4 +8,9 @@ public class DeviceSummaryDto
     public string? Name { get; set; }
     public DateTime? LastSeen { get; set; }
     public bool IsActive { get; set; }
+    
+    // Latest location for map display
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public DateTime? LastLocationTime { get; set; }
 }

@@ -7,8 +7,19 @@ using GeoTrack.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using GeoTrack.Infrastructure;
+using GeoTrack.Infrastructure.Persistence;
+using GeoTrack.Api.Hubs;
+using GeoTrack.Api.Services;
+using GeoTrack.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+const string UiCors = "ui";
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -39,13 +50,11 @@ builder.Services.AddSingleton<IIngestionGate, IngestionGate>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DevelopmentCors", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173")
+    options.AddPolicy(UiCors, policy =>
+        policy.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173")
+              .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyHeader();
-        // .AllowCredentials(); // Not enabled yet as per requirements
-    });
+              .AllowCredentials());
 });
 
 // Configure Kestrel to force HTTP/1.1 and increase// Configure Kestrel limits and protocols
@@ -60,6 +69,9 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     serverOptions.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
 });
 
+// Enable CORS debug logging
+builder.Logging.AddFilter("Microsoft.AspNetCore.Cors", LogLevel.Debug);
+
 var app = builder.Build();
 
 // Auto-migrate in Development
@@ -68,22 +80,36 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<GeoTrackDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
         try 
         {
-             db.Database.Migrate();
+            logger.LogInformation("Starting database migration...");
+            db.Database.Migrate();
+            logger.LogInformation("Database migration completed successfully");
         }
         catch (Exception ex)
         {
-            // Log or ignore if connection fails (let health check handle it)
+            // Log error but don't crash - let health check handle it
+            logger.LogError(ex, "Migration failed: {Message}", ex.Message);
             Console.WriteLine($"Migration failed: {ex.Message}");
         }
     }
 }
 
 // Configure the HTTP request pipeline.
-app.UseExceptionHandler(); 
+app.UseExceptionHandler();
 
-// Throttling Middleware for Telemetry
+
+
+app.UseRouting();
+
+// CORS must run here, before anything can short-circuit
+app.UseCors("ui");
+
+
+
+// Throttling Middleware for Telemetry - AFTER CORS
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/telemetry"), appBuilder =>
 {
     appBuilder.UseMiddleware<GeoTrack.Api.Infrastructure.IngestionThrottlingMiddleware>();
@@ -100,12 +126,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseCors("DevelopmentCors");
-
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<GeoTrackHub>("/hubs/geotrack");
+
+
 
 app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {

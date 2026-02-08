@@ -26,13 +26,22 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, IEnumerable<De
         // Active threshold: 2 minutes
         var activeThreshold = DateTime.UtcNow.AddMinutes(-2);
 
+        // Use GroupJoin to get latest location for each device
         var devices = await _context.Devices
-            .Select(d => new 
-            {
-                d.ExternalId,
-                d.Name,
-                d.LastSeenAt
-            })
+            .GroupJoin(
+                _context.Locations,
+                d => d.Id,
+                l => l.DeviceId,
+                (device, locations) => new
+                {
+                    device.ExternalId,
+                    device.Name,
+                    device.LastSeenAt,
+                    LatestLocation = locations
+                        .OrderByDescending(l => l.Timestamp)
+                        .Select(l => new { l.Lat, l.Lon, l.Timestamp })
+                        .FirstOrDefault()
+                })
             .ToListAsync(cancellationToken);
 
         return devices.Select(d => new DeviceSummaryDto
@@ -40,7 +49,10 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, IEnumerable<De
             Id = d.ExternalId,
             Name = d.Name,
             LastSeen = d.LastSeenAt,
-            IsActive = d.LastSeenAt.HasValue && d.LastSeenAt.Value >= activeThreshold
+            IsActive = d.LastSeenAt.HasValue && d.LastSeenAt.Value >= activeThreshold,
+            Latitude = d.LatestLocation?.Lat,
+            Longitude = d.LatestLocation?.Lon,
+            LastLocationTime = d.LatestLocation?.Timestamp
         });
     }
 }

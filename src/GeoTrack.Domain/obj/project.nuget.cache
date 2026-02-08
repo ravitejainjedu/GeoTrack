@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zWskpd6wyRs=",
+  "dgSpecHash": "bNfY2h2MoJ4=",
   "success": true,
-  "projectFilePath": "C:\\Ravi Teja files\\Projects\\GeoTrack\\src\\GeoTrack.Domain\\GeoTrack.Domain.csproj",
+  "projectFilePath": "/app/src/GeoTrack.Domain/GeoTrack.Domain.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
