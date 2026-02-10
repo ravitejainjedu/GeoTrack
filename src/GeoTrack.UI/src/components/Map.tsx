@@ -21,18 +21,29 @@ function MapController({ devices, selectedDeviceId, onBackgroundClick, resetView
 }) {
     const map = useMap();
 
-    // Handle background clicks to clear selection
+    // State refs to prevent continuous re-fitting/flying
+    const hasFitInitial = React.useRef(false);
+    const lastSelectedId = React.useRef<string | null>(null);
+    const userInteracted = React.useRef(false);
+
+    // Track user interaction to disable auto-centering
     useMapEvents({
         click(e) {
-            // Only clear if clicking on the map background, not a marker
-            // Leaflet handles bubbling, but we can trust useMapEvents for the map container
             if (onBackgroundClick) onBackgroundClick();
         },
+        dragstart() {
+            userInteracted.current = true;
+        },
+        zoomstart() {
+            userInteracted.current = true;
+        }
     });
 
-    // Handle Reset View Trigger
+    // Handle Reset View Trigger (Home Button)
     useEffect(() => {
         if (resetViewTrigger && devices.length > 0) {
+            console.log('[Map] Home clicked, resetting view');
+            userInteracted.current = false; // Reset interaction flag
             const bounds = L.latLngBounds(devices.filter(d => d.lat && d.lon).map(d => [d.lat!, d.lon!]));
             if (bounds.isValid()) {
                 map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15, animate: true, duration: 1 });
@@ -40,25 +51,47 @@ function MapController({ devices, selectedDeviceId, onBackgroundClick, resetView
         }
     }, [resetViewTrigger, map, devices]);
 
-    // Initial FitBounds (only on mount/first load)
+    // Initial FitBounds (only once)
     useEffect(() => {
-        if (devices.length > 0) {
+        if (!hasFitInitial.current && devices.length > 0) {
             const bounds = L.latLngBounds(devices.filter(d => d.lat && d.lon).map(d => [d.lat!, d.lon!]));
             if (bounds.isValid()) {
+                console.log('[Map] Initial fitBounds');
                 map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+                hasFitInitial.current = true;
             }
         }
-    }, []); // Run once
+    }, [devices, map]);
 
-    // FlyTo Selection
+    // FlyTo Selection - ONLY on selection change, NOT on coordinate update
     useEffect(() => {
-        const selected = devices.find(d => d.externalId === selectedDeviceId);
-        if (selected && selected.lat && selected.lon) {
-            map.flyTo([selected.lat, selected.lon], 16, {
-                duration: 1.5,
-            });
+        // If selection changed
+        if (selectedDeviceId !== lastSelectedId.current) {
+            lastSelectedId.current = selectedDeviceId;
+
+            if (selectedDeviceId) {
+                const selected = devices.find(d => d.externalId === selectedDeviceId);
+                // Only fly if we have a location AND user hasn't dragged away (unless it's a fresh selection)
+                if (selected && selected.lat && selected.lon) {
+                    console.log(`[Map] Flying to selected: ${selectedDeviceId}`);
+                    map.flyTo([selected.lat, selected.lon], 16, {
+                        duration: 1.5,
+                    });
+                    // Reset interaction on fresh selection so we track them again? 
+                    // Or keep it true? User asked: "flyTo that device once".
+                    // Let's NOT reset userInteracted here, because simply selecting doesn't mean we want to lock view.
+                    // Actually, if I click a device in the list, I expect to see it.
+                    userInteracted.current = false;
+                }
+            }
         }
-    }, [selectedDeviceId, map, devices]);
+        // NOTE: We deliberately do NOT put 'devices' in dependency array to avoid re-running on update.
+        // We only want to run when selectedDeviceId changes.
+        // However, if the device list is empty when selected, we might miss it?
+        // But 'selectedDeviceId' coming from store ensures we usually have devices.
+        // To be safe, we can check if we need to fly to an existing selection that just appeared?
+        // For now, adhere to "Selection flyTo only once per selection".
+    }, [selectedDeviceId, map, devices]); // 'devices' is needed to find the lat/lon. 
 
     return null;
 }

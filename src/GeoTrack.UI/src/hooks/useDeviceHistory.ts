@@ -12,6 +12,14 @@ export interface HistoryPoint {
 
 export type TimeRange = 15 | 30 | 60 | 360; // Minutes
 
+// Cap points based on range to prevent rendering lag
+const MAX_POINTS_BY_RANGE: Record<TimeRange, number> = {
+    15: 300,
+    30: 600,
+    60: 1200,
+    360: 2500
+};
+
 export function useDeviceHistory(
     deviceId: string | null,
     timeRangeMinutes: TimeRange,
@@ -19,60 +27,86 @@ export function useDeviceHistory(
 ) {
     const [history, setHistory] = useState<HistoryPoint[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    // Keep track of the last processed event to avoid duplicates
+
+    // Refs for concurrency control and deduplication
     const lastEventTimeRef = useRef<string | null>(null);
+    const requestIdRef = useRef(0);
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     // Fetch history when device or range changes
     useEffect(() => {
+        // 1. Reset State Immediately
+        const currentRequestId = ++requestIdRef.current;
+
+        // Cancel previous request if running
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        // Create new controller
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
         if (!deviceId) {
-            console.log('[History] No device selected, clearing history');
+            console.log('[History] No device, clearing');
             setHistory([]);
+            setIsLoading(false);
             return;
         }
 
-        console.log(`[History] selectedDeviceId: ${deviceId}, range: ${timeRangeMinutes}m`);
+        console.log(`[History] Range changed to ${timeRangeMinutes}m, resetting points`);
+        setHistory([]); // Visible reset
+        setIsLoading(true);
+        lastEventTimeRef.current = null;
 
         const fetchHistory = async () => {
-            setIsLoading(true);
             try {
                 const to = new Date();
                 const from = new Date(to.getTime() - timeRangeMinutes * 60 * 1000);
+                const limit = MAX_POINTS_BY_RANGE[timeRangeMinutes] || 500;
 
-                const url = `${API_URL}/api/devices/${deviceId}/locations?from=${from.toISOString()}&to=${to.toISOString()}&limit=500`;
-                console.log(`[History] GET ${url}`);
+                const url = `${API_URL}/api/devices/${deviceId}/locations?from=${from.toISOString()}&to=${to.toISOString()}&limit=${limit}`;
 
-                const res = await fetch(url);
+                const res = await fetch(url, { signal: controller.signal });
                 if (!res.ok) throw new Error('Failed to fetch history');
 
                 const data = await res.json();
-                const count = data.data?.length || 0;
-                console.log(`[History] points received: ${count}`);
 
-                // Map API response to simple points
-                // Backend returns: Data: LocationDto[] { lat, lon, timestamp, speed }
+                // version check: if request changed, ignore result
+                if (currentRequestId !== requestIdRef.current) return;
+
+                const count = data.data?.length || 0;
+                console.log(`[History] Loaded ${count} points`);
+
                 const points = (data.data || []).map((item: any) => ({
                     lat: item.lat,
                     lon: item.lon,
                     timestamp: item.timestamp,
                     speed: item.speed
                 }));
-                // Verify ordering: Backend sorts by Timestamp ASC.
 
                 setHistory(points);
                 if (points.length > 0) {
                     lastEventTimeRef.current = points[points.length - 1].timestamp;
-                } else {
-                    lastEventTimeRef.current = null; // Accept any new live point if history is empty
                 }
-            } catch (err) {
+            } catch (err: any) {
+                if (err.name === 'AbortError') return;
                 console.error('[History] Error fetching:', err);
-                setHistory([]);
+                if (currentRequestId === requestIdRef.current) {
+                    setHistory([]);
+                }
             } finally {
-                setIsLoading(false);
+                if (currentRequestId === requestIdRef.current) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchHistory();
+
+        return () => {
+            controller.abort();
+        };
     }, [deviceId, timeRangeMinutes]);
 
     // Append real-time events
@@ -83,9 +117,12 @@ export function useDeviceHistory(
         // Dedup based on timestamp
         if (lastEventTimeRef.current === latestEvent.timestamp) return;
 
-        lastEventTimeRef.current = latestEvent.timestamp;
+        // Filter out if older than current range window
+        const eventTime = new Date(latestEvent.timestamp).getTime();
+        const windowStart = Date.now() - (timeRangeMinutes * 60 * 1000);
+        if (eventTime < windowStart) return;
 
-        console.log(`[History] Appending live point: ${latestEvent.timestamp}`);
+        lastEventTimeRef.current = latestEvent.timestamp;
 
         setHistory(prev => {
             const newPoint: HistoryPoint = {
@@ -95,14 +132,15 @@ export function useDeviceHistory(
                 speed: latestEvent.speed
             };
 
-            // Append and slice to keep size manageable (e.g. 500)
+            const limit = MAX_POINTS_BY_RANGE[timeRangeMinutes] || 500;
             const newHistory = [...prev, newPoint];
-            if (newHistory.length > 500) {
-                return newHistory.slice(newHistory.length - 500);
+
+            if (newHistory.length > limit) {
+                return newHistory.slice(newHistory.length - limit);
             }
             return newHistory;
         });
-    }, [latestEvent, deviceId]);
+    }, [latestEvent, deviceId, timeRangeMinutes]);
 
     return { history, isLoading };
 }

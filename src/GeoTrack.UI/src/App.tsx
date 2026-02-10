@@ -6,6 +6,7 @@ import { ConnectionStatus } from './components/ConnectionStatus';
 import { DebugPanel } from './components/DebugPanel';
 import { useSignalR } from './hooks/useSignalR';
 import { useDeviceStore } from './stores/deviceStore';
+import { useDeviceHistory, type TimeRange } from './hooks/useDeviceHistory';
 import type { Device } from './types/device';
 import './App.css';
 
@@ -16,12 +17,30 @@ function App() {
   const { devicesById, selectedDeviceId, setDevices, selectDevice } = useDeviceStore();
   const [resetViewTrigger, setResetViewTrigger] = useState(0);
 
+  // History State
+  const [timeRange, setTimeRange] = useState<TimeRange>(30); // Default 30m
+
+  // Use history hook
+  const latestEvent = recentEvents.length > 0 ? recentEvents[0] : null;
+  const { history, isLoading: isHistoryLoading } = useDeviceHistory(selectedDeviceId, timeRange, latestEvent);
+
   // Fetch devices from REST API on mount
   useEffect(() => {
     fetch(`${API_URL}/api/devices`)
-      .then((res) => res.json())
-      .then((data: any[]) => {
-        const devices: Device[] = data.map((d) => ({
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data: any) => {
+        // Defensive parsing
+        const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+
+        if (!Array.isArray(list)) {
+          console.error('[App] Unexpected devices format:', data);
+          return;
+        }
+
+        const devices: Device[] = list.map((d: any) => ({
           externalId: d.id,
           name: d.name,
           lat: d.latitude,
@@ -39,9 +58,20 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`${API_URL}/api/devices`)
-        .then((res) => res.json())
-        .then((data: any[]) => {
-          const devices: Device[] = data.map((d) => ({
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data: any) => {
+          // Defensive parsing: handle array or { data: [...] } or null
+          const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+
+          if (!Array.isArray(list)) {
+            console.error('[App] Unexpected devices format:', data);
+            return;
+          }
+
+          const devices: Device[] = list.map((d: any) => ({
             externalId: d.id,
             name: d.name,
             lat: d.latitude,
@@ -126,6 +156,9 @@ function App() {
             <DeviceDetail
               device={selectedDevice}
               onClose={() => selectDevice(null)}
+              historyStats={{ count: history.length, isLoading: isHistoryLoading }}
+              timeRange={timeRange}
+              onTimeRangeChange={setTimeRange}
             />
           </div>
           <DebugPanel events={recentEvents} />
@@ -139,6 +172,7 @@ function App() {
             onDeviceSelect={selectDevice}
             onBackgroundClick={() => selectDevice(null)}
             resetViewTrigger={resetViewTrigger}
+            history={history}
           />
         </div>
       </div>

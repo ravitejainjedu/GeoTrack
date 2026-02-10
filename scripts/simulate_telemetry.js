@@ -54,7 +54,8 @@ function sendTelemetry(payload) {
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(data),
-      'Connection': 'keep-alive'
+      'Connection': 'keep-alive',
+      'X-API-KEY': process.env.API_KEY || 'dev-key-123'
     },
     agent: agent,
     timeout: 5000 // Request timeout

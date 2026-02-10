@@ -124,8 +124,12 @@ if (app.Environment.IsDevelopment())
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
+    app.UseCors(UiCors); // Re-added conditionally with the original policy name
 }
 
+app.UseMiddleware<GeoTrack.Api.Middleware.ApiKeyAuthMiddleware>();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
