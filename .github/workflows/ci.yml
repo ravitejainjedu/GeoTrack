@@ -50,6 +50,42 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # FORENSIC DEBUG: Print exact commit and context
+    - name: Debug - Git Info
+      run: |
+        echo "=== GIT COMMIT INFO ==="
+        git rev-parse HEAD
+        git log -1 --oneline
+        git branch --show-current || echo "detached HEAD"
+        git status --porcelain
+        echo "=== GITHUB CONTEXT ==="
+        echo "github.ref: ${{ github.ref }}"
+        echo "github.sha: ${{ github.sha }}"
+        echo "github.head_ref: ${{ github.head_ref }}"
+        echo "github.base_ref: ${{ github.base_ref }}"
+
+    # FORENSIC DEBUG: Print actual file contents at error lines
+    - name: Debug - File Contents at Error Lines
+      run: |
+        echo "=== App.tsx lines 30-50 (errors at 34,43) ==="
+        sed -n '30,50p' src/GeoTrack.UI/src/App.tsx
+        echo "=== App.tsx lines 60-80 (errors at 65,74) ==="
+        sed -n '60,80p' src/GeoTrack.UI/src/App.tsx
+        echo "=== Map.tsx lines 28-35 (error at 31) ==="
+        sed -n '28,35p' src/GeoTrack.UI/src/components/Map.tsx
+        echo "=== useDeviceHistory.ts lines 78-95 (errors at 81,92) ==="
+        sed -n '78,95p' src/GeoTrack.UI/src/hooks/useDeviceHistory.ts
+
+    # FORENSIC DEBUG: Check for duplicate files and working directory
+    - name: Debug - File Locations
+      run: |
+        echo "=== CURRENT WORKING DIRECTORY ==="
+        pwd
+        echo "=== FIND ALL TYPESCRIPT FILES ==="
+        find . -name "App.tsx" -o -name "Map.tsx" -o -name "useDeviceHistory.ts"
+        echo "=== UI PACKAGE.JSON PATH ==="
+        cat src/GeoTrack.UI/package.json | head -n 10
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
