@@ -22,34 +22,24 @@ public class SignalRIntegrationTests : IAsyncLifetime
         .WithImage("postgres:15-alpine")
         .Build();
 
-    private WebApplicationFactory<Program> _factory = null!;
+    private GeoTrackApiFactory _factory = null!;
     private HubConnection _connection = null!;
 
     public async Task InitializeAsync()
     {
         await _postgres.StartAsync();
 
-        _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
+        _factory = new GeoTrackApiFactory(services =>
+        {
+            // Replace DB Context with Test Container
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<GeoTrackDbContext>));
+            if (descriptor != null) services.Remove(descriptor);
+
+            services.AddDbContext<GeoTrackDbContext>(options =>
             {
-                builder.ConfigureAppConfiguration((ctx, cfg) =>
-                {
-                    // Set API key via environment variable
-                    Environment.SetEnvironmentVariable("GeoTrack__ApiKey", TestConstants.ApiKeyValue);
-                });
-
-                builder.ConfigureServices(services =>
-                {
-                    // Replace DB Context with Test Container
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<GeoTrackDbContext>));
-                    if (descriptor != null) services.Remove(descriptor);
-
-                    services.AddDbContext<GeoTrackDbContext>(options =>
-                    {
-                        options.UseNpgsql(_postgres.GetConnectionString());
-                    });
-                });
+                options.UseNpgsql(_postgres.GetConnectionString());
             });
+        });
 
         // Ensure DB is created
         using (var scope = _factory.Services.CreateScope())
@@ -103,7 +93,7 @@ public class SignalRIntegrationTests : IAsyncLifetime
         };
 
         var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add(TestConstants.ApiKeyHeader, TestConstants.ApiKeyValue);
+        // Header added automatically
 
         // Act
         var response = await client.PostAsJsonAsync("/api/telemetry", new[] { telemetry });
@@ -126,7 +116,7 @@ public class SignalRIntegrationTests : IAsyncLifetime
         });
 
         var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add(TestConstants.ApiKeyHeader, TestConstants.ApiKeyValue);
+        // Header added automatically
         var deviceId = "device-burst-1";
 
         // Act: Burst 10 points in simple loop (should be very fast, << 100ms)

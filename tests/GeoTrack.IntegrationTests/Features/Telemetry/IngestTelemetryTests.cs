@@ -20,34 +20,24 @@ public class IngestTelemetryTests : IAsyncLifetime
         .WithImage("postgres:15-alpine")
         .Build();
 
-    private WebApplicationFactory<Program> _factory = null!;
+    private GeoTrackApiFactory _factory = null!;
 
     public async Task InitializeAsync()
     {
         await _postgres.StartAsync();
 
-        _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((ctx, cfg) =>
-                {
-                    // Set API key via environment variable
-                    Environment.SetEnvironmentVariable("GeoTrack__ApiKey", TestConstants.ApiKeyValue);
-                });
+        _factory = new GeoTrackApiFactory(services =>
+        {
+            // Remove existing DbContext
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<GeoTrackDbContext>));
+            if (descriptor != null)
+                services.Remove(descriptor);
 
-                builder.ConfigureServices(services =>
-                {
-                    // Remove existing DbContext
-                    var descriptor = services.SingleOrDefault(
-                        d => d.ServiceType == typeof(DbContextOptions<GeoTrackDbContext>));
-                    if (descriptor != null)
-                        services.Remove(descriptor);
-
-                    // Add DbContext with container connection string
-                    services.AddDbContext<GeoTrackDbContext>(options =>
-                        options.UseNpgsql(_postgres.GetConnectionString()));
-                });
-            });
+            // Add DbContext with container connection string
+            services.AddDbContext<GeoTrackDbContext>(options =>
+                options.UseNpgsql(_postgres.GetConnectionString()));
+        });
 
         // Apply migrations
         /*
@@ -70,7 +60,7 @@ public class IngestTelemetryTests : IAsyncLifetime
     {
         // Arrange
         var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add(TestConstants.ApiKeyHeader, TestConstants.ApiKeyValue);
+        // Header added automatically by Factory
         var deviceId = "test-device-01";
         var now = DateTime.UtcNow;
 

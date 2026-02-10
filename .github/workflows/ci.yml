@@ -69,16 +69,34 @@ jobs:
       run: |
         echo "=== DISCOVER FILE STRUCTURE ==="
         ls -la
-        find . -maxdepth 4 -name "App.tsx"
-        find . -maxdepth 4 -name "package.json" -path "*/GeoTrack.UI/*"
+        find . -maxdepth 4 -name "App.tsx" || true
+        find . -maxdepth 4 -name "package.json" || true
+        
         echo "=== App.tsx lines 30-50 (errors at 34,43) ==="
-        sed -n '30,50p' src/GeoTrack.UI/src/App.tsx
+        if [ -f src/App.tsx ]; then
+          sed -n '30,50p' src/App.tsx
+        else
+          echo "WARNING: src/App.tsx not found"
+        fi
+
         echo "=== App.tsx lines 60-80 (errors at 65,74) ==="
-        sed -n '60,80p' src/GeoTrack.UI/src/App.tsx
+        if [ -f src/App.tsx ]; then
+          sed -n '60,80p' src/App.tsx
+        fi
+
         echo "=== Map.tsx lines 28-35 (error at 31) ==="
-        sed -n '28,35p' src/GeoTrack.UI/src/components/Map.tsx
+        if [ -f src/components/Map.tsx ]; then
+          sed -n '28,35p' src/components/Map.tsx
+        else
+          echo "WARNING: src/components/Map.tsx not found"
+        fi
+
         echo "=== useDeviceHistory.ts lines 78-95 (errors at 81,92) ==="
-        sed -n '78,95p' src/GeoTrack.UI/src/hooks/useDeviceHistory.ts
+        if [ -f src/hooks/useDeviceHistory.ts ]; then
+          sed -n '78,95p' src/hooks/useDeviceHistory.ts
+        else
+          echo "WARNING: src/hooks/useDeviceHistory.ts not found"
+        fi
 
     # FORENSIC DEBUG: Check for duplicate files and working directory
     - name: Debug - File Locations

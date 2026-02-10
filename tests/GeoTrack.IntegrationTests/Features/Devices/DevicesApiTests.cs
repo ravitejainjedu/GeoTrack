@@ -22,23 +22,19 @@ public class DevicesApiTests : IAsyncLifetime
         .WithImage("postgres:15-alpine")
         .Build();
 
-    private WebApplicationFactory<Program> _factory = null!;
+    private GeoTrackApiFactory _factory = null!;
 
     public async Task InitializeAsync()
     {
         await _postgres.StartAsync();
-        _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(Microsoft.EntityFrameworkCore.DbContextOptions<GeoTrackDbContext>));
-                    if (descriptor != null) services.Remove(descriptor);
+        _factory = new GeoTrackApiFactory(services =>
+        {
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(Microsoft.EntityFrameworkCore.DbContextOptions<GeoTrackDbContext>));
+            if (descriptor != null) services.Remove(descriptor);
 
-                    services.AddDbContext<GeoTrackDbContext>(options =>
-                        options.UseNpgsql(_postgres.GetConnectionString()));
-                });
-            });
+            services.AddDbContext<GeoTrackDbContext>(options =>
+                options.UseNpgsql(_postgres.GetConnectionString()));
+        });
 
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<GeoTrackDbContext>();
