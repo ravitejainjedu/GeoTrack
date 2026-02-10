@@ -29,7 +29,7 @@ public class GeoTrackApiFactory : WebApplicationFactory<Program>
     protected override void ConfigureClient(HttpClient client)
     {
         base.ConfigureClient(client);
-        
+
         // 2. Ensure every client created has the API Key header
         if (!client.DefaultRequestHeaders.Contains(TestConstants.ApiKeyHeader))
         {
