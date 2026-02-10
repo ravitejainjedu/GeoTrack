@@ -26,33 +26,38 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, IEnumerable<De
         // Active threshold: 2 minutes
         var activeThreshold = DateTime.UtcNow.AddMinutes(-2);
 
-        // Use GroupJoin to get latest location for each device
+        // 1. Fetch all devices
         var devices = await _context.Devices
-            .GroupJoin(
-                _context.Locations,
-                d => d.Id,
-                l => l.DeviceId,
-                (device, locations) => new
-                {
-                    device.ExternalId,
-                    device.Name,
-                    device.LastSeenAt,
-                    LatestLocation = locations
-                        .OrderByDescending(l => l.Timestamp)
-                        .Select(l => new { l.Lat, l.Lon, l.Timestamp })
-                        .FirstOrDefault()
-                })
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return devices.Select(d => new DeviceSummaryDto
+        // 2. Fetch all locations and group by DeviceId in memory
+        var allLocations = await _context.Locations
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        // Group and get latest for each device
+        var latestByDevice = allLocations
+            .GroupBy(l => l.DeviceId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(l => l.Timestamp).FirstOrDefault()
+            );
+
+        // 3. Join in memory
+        return devices.Select(d => 
         {
-            Id = d.ExternalId,
-            Name = d.Name,
-            LastSeen = d.LastSeenAt,
-            IsActive = d.LastSeenAt.HasValue && d.LastSeenAt.Value >= activeThreshold,
-            Latitude = d.LatestLocation?.Lat,
-            Longitude = d.LatestLocation?.Lon,
-            LastLocationTime = d.LatestLocation?.Timestamp
-        });
+            latestByDevice.TryGetValue(d.Id, out var loc);
+            return new DeviceSummaryDto
+            {
+                Id = d.ExternalId,
+                Name = d.Name,
+                LastSeen = d.LastSeenAt,
+                IsActive = d.LastSeenAt.HasValue && d.LastSeenAt.Value >= activeThreshold,
+                Latitude = loc?.Lat,
+                Longitude = loc?.Lon,
+                LastLocationTime = loc?.Timestamp
+            };
+        }).ToList();
     }
 }
