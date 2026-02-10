@@ -67,6 +67,10 @@ jobs:
     # FORENSIC DEBUG: Print actual file contents at error lines
     - name: Debug - File Contents at Error Lines
       run: |
+        echo "=== DISCOVER FILE STRUCTURE ==="
+        ls -la
+        find . -maxdepth 4 -name "App.tsx"
+        find . -maxdepth 4 -name "package.json" -path "*/GeoTrack.UI/*"
         echo "=== App.tsx lines 30-50 (errors at 34,43) ==="
         sed -n '30,50p' src/GeoTrack.UI/src/App.tsx
         echo "=== App.tsx lines 60-80 (errors at 65,74) ==="

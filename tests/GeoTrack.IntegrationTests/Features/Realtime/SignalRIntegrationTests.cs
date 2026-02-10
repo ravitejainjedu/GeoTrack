@@ -32,6 +32,14 @@ public class SignalRIntegrationTests : IAsyncLifetime
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
+                builder.ConfigureAppConfiguration((ctx, cfg) =>
+                {
+                    cfg.AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        ["GeoTrack:ApiKey"] = TestConstants.ApiKeyValue
+                    });
+                });
+
                 builder.ConfigureServices(services =>
                 {
                     // Replace DB Context with Test Container
@@ -97,6 +105,7 @@ public class SignalRIntegrationTests : IAsyncLifetime
         };
 
         var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestConstants.ApiKeyHeader, TestConstants.ApiKeyValue);
 
         // Act
         var response = await client.PostAsJsonAsync("/api/telemetry", new[] { telemetry });
@@ -119,6 +128,7 @@ public class SignalRIntegrationTests : IAsyncLifetime
         });
 
         var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestConstants.ApiKeyHeader, TestConstants.ApiKeyValue);
         var deviceId = "device-burst-1";
 
         // Act: Burst 10 points in simple loop (should be very fast, << 100ms)

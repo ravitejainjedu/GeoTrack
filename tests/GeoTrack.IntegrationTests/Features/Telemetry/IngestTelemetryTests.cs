@@ -29,6 +29,14 @@ public class IngestTelemetryTests : IAsyncLifetime
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
+                builder.ConfigureAppConfiguration((ctx, cfg) =>
+                {
+                    cfg.AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        ["GeoTrack:ApiKey"] = TestConstants.ApiKeyValue
+                    });
+                });
+
                 builder.ConfigureServices(services =>
                 {
                     // Remove existing DbContext
@@ -64,6 +72,7 @@ public class IngestTelemetryTests : IAsyncLifetime
     {
         // Arrange
         var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestConstants.ApiKeyHeader, TestConstants.ApiKeyValue);
         var deviceId = "test-device-01";
         var now = DateTime.UtcNow;
 
