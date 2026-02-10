@@ -9,8 +9,8 @@ using GeoTrack.Application.DTOs;
 using GeoTrack.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -34,10 +34,8 @@ public class SignalRIntegrationTests : IAsyncLifetime
             {
                 builder.ConfigureAppConfiguration((ctx, cfg) =>
                 {
-                    cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                    {
-                        ["GeoTrack:ApiKey"] = TestConstants.ApiKeyValue
-                    });
+                    // Set API key via environment variable
+                    Environment.SetEnvironmentVariable("GeoTrack__ApiKey", TestConstants.ApiKeyValue);
                 });
 
                 builder.ConfigureServices(services =>

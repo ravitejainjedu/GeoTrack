@@ -31,10 +31,8 @@ public class IngestTelemetryTests : IAsyncLifetime
             {
                 builder.ConfigureAppConfiguration((ctx, cfg) =>
                 {
-                    cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                    {
-                        ["GeoTrack:ApiKey"] = TestConstants.ApiKeyValue
-                    });
+                    // Set API key via environment variable
+                    Environment.SetEnvironmentVariable("GeoTrack__ApiKey", TestConstants.ApiKeyValue);
                 });
 
                 builder.ConfigureServices(services =>

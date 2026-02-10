@@ -88,7 +88,7 @@ jobs:
         echo "=== FIND ALL TYPESCRIPT FILES ==="
         find . -name "App.tsx" -o -name "Map.tsx" -o -name "useDeviceHistory.ts"
         echo "=== UI PACKAGE.JSON PATH ==="
-        cat src/GeoTrack.UI/package.json | head -n 10
+        cat package.json | head -n 10
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
