@@ -31,23 +31,23 @@ function App() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then((data: any) => {
+      .then((data: unknown) => {
         // Defensive parsing
-        const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+        const list = Array.isArray(data) ? data : (Array.isArray((data as { data?: unknown[] })?.data) ? (data as { data: unknown[] }).data : []);
 
         if (!Array.isArray(list)) {
           console.error('[App] Unexpected devices format:', data);
           return;
         }
 
-        const devices: Device[] = list.map((d: any) => ({
-          externalId: d.id,
-          name: d.name,
-          lat: d.latitude,
-          lon: d.longitude,
-          lastLocationTime: d.lastLocationTime,
-          lastSeen: d.lastSeen,
-          isActive: d.isActive,
+        const devices: Device[] = list.map((d: Record<string, unknown>) => ({
+          externalId: d.id as string,
+          name: d.name as string,
+          lat: (d.latitude as number | undefined) ?? null,
+          lon: (d.longitude as number | undefined) ?? null,
+          lastLocationTime: (d.lastLocationTime as string | undefined) ?? null,
+          lastSeen: (d.lastSeen as string | undefined) ?? null,
+          isActive: d.isActive as boolean,
         }));
         setDevices(devices);
       })
@@ -62,23 +62,23 @@ function App() {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
-        .then((data: any) => {
+        .then((data: unknown) => {
           // Defensive parsing: handle array or { data: [...] } or null
-          const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+          const list = Array.isArray(data) ? data : (Array.isArray((data as { data?: unknown[] })?.data) ? (data as { data: unknown[] }).data : []);
 
           if (!Array.isArray(list)) {
             console.error('[App] Unexpected devices format:', data);
             return;
           }
 
-          const devices: Device[] = list.map((d: any) => ({
-            externalId: d.id,
-            name: d.name,
-            lat: d.latitude,
-            lon: d.longitude,
-            lastLocationTime: d.lastLocationTime,
-            lastSeen: d.lastSeen,
-            isActive: d.isActive,
+          const devices: Device[] = list.map((d: Record<string, unknown>) => ({
+            externalId: d.id as string,
+            name: d.name as string,
+            lat: (d.latitude as number | undefined) ?? null,
+            lon: (d.longitude as number | undefined) ?? null,
+            lastLocationTime: (d.lastLocationTime as string | undefined) ?? null,
+            lastSeen: (d.lastSeen as string | undefined) ?? null,
+            isActive: (d.isActive as boolean | undefined) ?? false,
           }));
           setDevices(devices);
         })

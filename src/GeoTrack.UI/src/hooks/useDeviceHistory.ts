@@ -78,19 +78,19 @@ export function useDeviceHistory(
                 const count = data.data?.length || 0;
                 console.log(`[History] Loaded ${count} points`);
 
-                const points = (data.data || []).map((item: any) => ({
-                    lat: item.lat,
-                    lon: item.lon,
-                    timestamp: item.timestamp,
-                    speed: item.speed
+                const points = (data.data || []).map((item: Record<string, unknown>) => ({
+                    lat: item.lat as number,
+                    lon: item.lon as number,
+                    timestamp: item.timestamp as string,
+                    speed: item.speed as number | undefined
                 }));
 
                 setHistory(points);
                 if (points.length > 0) {
                     lastEventTimeRef.current = points[points.length - 1].timestamp;
                 }
-            } catch (err: any) {
-                if (err.name === 'AbortError') return;
+            } catch (err: unknown) {
+                if ((err as Error).name === 'AbortError') return;
                 console.error('[History] Error fetching:', err);
                 if (currentRequestId === requestIdRef.current) {
                     setHistory([]);

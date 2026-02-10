@@ -48,20 +48,20 @@ public class DevicesController : ControllerBase
 
     [HttpGet("{externalId}/locations")]
     public async Task<IActionResult> GetHistory(
-        string externalId, 
-        [FromQuery] DateTime? from, 
-        [FromQuery] DateTime? to, 
-        [FromQuery] int limit = 1000, 
+        string externalId,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        [FromQuery] int limit = 1000,
         [FromQuery] string? cursor = null)
     {
         // Validation logic for params handled by FluentValidation if we hook it up, 
         // OR manual check here. MediatR pipeline validaton is cleaner.
         // But FromQuery binding needs to map to Request.
-        
+
         // Defaults/Fixups:
         // "If only from is provided: allow to = now"
         // "If only to: allow from = to - 1h"
-        
+
         var effectiveTo = to;
         var effectiveFrom = from;
 
@@ -75,8 +75,8 @@ public class DevicesController : ControllerBase
         }
 
         var query = new GetDeviceHistoryQuery(externalId, effectiveFrom, effectiveTo, limit, cursor);
-        
-        try 
+
+        try
         {
             var result = await _mediator.Send(query);
             if (result == null) return NotFound();

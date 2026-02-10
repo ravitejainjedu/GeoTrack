@@ -16,7 +16,7 @@ public class IngestionGate : IIngestionGate
 
     public void Exit()
     {
-        try 
+        try
         {
             _semaphore.Release();
         }

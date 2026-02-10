@@ -81,8 +81,8 @@ if (app.Environment.IsDevelopment())
     {
         var db = scope.ServiceProvider.GetRequiredService<GeoTrackDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        
-        try 
+
+        try
         {
             logger.LogInformation("Starting database migration...");
             db.Database.Migrate();

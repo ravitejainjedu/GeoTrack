@@ -16,10 +16,10 @@ public class SignalRTelemetryBroadcaster : BackgroundService, ITelemetryBroadcas
 {
     private readonly IHubContext<GeoTrackHub> _hubContext;
     private readonly ILogger<SignalRTelemetryBroadcaster> _logger;
-    
+
     // Key: ExternalId, Value: Latest Telemetry
     private readonly ConcurrentDictionary<string, TelemetryDto> _pendingUpdates = new();
-    
+
     // Configuration
     private const int FlushIntervalMs = 200; // 5 Hz
     private const int MaxPendingSize = 10000; // Safety cap
@@ -49,7 +49,7 @@ public class SignalRTelemetryBroadcaster : BackgroundService, ITelemetryBroadcas
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("SignalR Telemetry Broadcaster started");
-        
+
         using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(FlushIntervalMs));
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
@@ -86,7 +86,7 @@ public class SignalRTelemetryBroadcaster : BackgroundService, ITelemetryBroadcas
                 }
             }
         }
-        
+
         _logger.LogInformation("SignalR Telemetry Broadcaster stopped");
     }
 }

@@ -28,7 +28,7 @@ function MapController({ devices, selectedDeviceId, onBackgroundClick, resetView
 
     // Track user interaction to disable auto-centering
     useMapEvents({
-        click(e) {
+        click() {
             if (onBackgroundClick) onBackgroundClick();
         },
         dragstart() {

@@ -8,7 +8,7 @@ public class TelemetryDtoValidator : AbstractValidator<TelemetryDto>
     public TelemetryDtoValidator()
     {
         RuleFor(x => x.DeviceId).NotEmpty();
-        
+
         RuleFor(x => x.Lat)
             .InclusiveBetween(-90, 90)
             .WithMessage("Latitude must be between -90 and 90.");

@@ -11,9 +11,9 @@ namespace GeoTrack.Api.Controllers;
 [Route("api/[controller]")]
 public class TelemetryController : ControllerBase
 {
-    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new() 
-    { 
-        PropertyNameCaseInsensitive = true 
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
     };
 
     private readonly IMediator _mediator;
@@ -29,7 +29,7 @@ public class TelemetryController : ControllerBase
     {
         IEnumerable<TelemetryDto> points;
 
-        try 
+        try
         {
             if (payload.ValueKind == System.Text.Json.JsonValueKind.Array)
             {
@@ -44,7 +44,7 @@ public class TelemetryController : ControllerBase
                 var point = System.Text.Json.JsonSerializer.Deserialize<TelemetryDto>(payload.GetRawText(), _jsonOptions);
                 points = point != null ? new[] { point } : Array.Empty<TelemetryDto>();
             }
-            else 
+            else
             {
                 return BadRequest(new { message = "Invalid payload format. Expected JSON object or array." });
             }
@@ -56,7 +56,7 @@ public class TelemetryController : ControllerBase
 
         if (!points.Any())
         {
-             return BadRequest(new { message = "No valid telemetry data found." });
+            return BadRequest(new { message = "No valid telemetry data found." });
         }
 
         var result = await _mediator.Send(new IngestTelemetryCommand(points));

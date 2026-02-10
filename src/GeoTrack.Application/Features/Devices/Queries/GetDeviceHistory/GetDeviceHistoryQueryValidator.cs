@@ -7,7 +7,7 @@ public class GetDeviceHistoryQueryValidator : AbstractValidator<GetDeviceHistory
     public GetDeviceHistoryQueryValidator()
     {
         RuleFor(x => x.ExternalId).NotEmpty();
-        
+
         RuleFor(x => x.Limit)
             .GreaterThan(0)
             .LessThanOrEqualTo(5000)

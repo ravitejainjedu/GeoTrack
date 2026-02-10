@@ -34,8 +34,8 @@ public class DevicesApiTests : IAsyncLifetime
                 {
                     var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(Microsoft.EntityFrameworkCore.DbContextOptions<GeoTrackDbContext>));
                     if (descriptor != null) services.Remove(descriptor);
-                    
-                    services.AddDbContext<GeoTrackDbContext>(options => 
+
+                    services.AddDbContext<GeoTrackDbContext>(options =>
                         options.UseNpgsql(_postgres.GetConnectionString()));
                 });
             });
@@ -88,7 +88,7 @@ public class DevicesApiTests : IAsyncLifetime
         historyResp.Should().NotBeNull();
         historyResp!.Data.Count().Should().Be(2);
         historyResp.NextCursor.Should().NotBeNull();
-        
+
         // Ordering check (Ascending)
         historyResp.Data.First().Lat.Should().Be(10);
         historyResp.Data.Last().Lat.Should().Be(11);

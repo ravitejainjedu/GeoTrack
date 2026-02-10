@@ -54,7 +54,7 @@ public class SignalRIntegrationTests : IAsyncLifetime
 
         // Start SignalR Connection
         var client = _factory.CreateClient(); // Just to keep alive? No, we need the Handler.
-        
+
         _connection = new HubConnectionBuilder()
             .WithUrl(_factory.Server.BaseAddress + "hubs/geotrack", options =>
             {
@@ -120,11 +120,11 @@ public class SignalRIntegrationTests : IAsyncLifetime
 
         var client = _factory.CreateClient();
         var deviceId = "device-burst-1";
-        
+
         // Act: Burst 10 points in simple loop (should be very fast, << 100ms)
         // Broadcaster flush is 200ms.
         // We expect at most 1 or 2 events globally for this device in that window.
-        
+
         var points = Enumerable.Range(0, 10).Select(i => new TelemetryDto
         {
             DeviceId = deviceId,
@@ -146,7 +146,7 @@ public class SignalRIntegrationTests : IAsyncLifetime
         events.Count.Should().BeInRange(1, 4, "should be effectively throttled (5Hz = 200ms period)");
         // Theoretically if we send 10 reqs in 50ms, we might get 0 (in buffer) then 1 flush. Or 1 early, then 1 final.
         // Definitely shouldn't be 10.
-        
+
         // Verify last one
         // Note: Payload is dynamic/object, strictly verifying properties is verbose with anonymous types.
         // Just asserting count is enough proof of coalescing for now.

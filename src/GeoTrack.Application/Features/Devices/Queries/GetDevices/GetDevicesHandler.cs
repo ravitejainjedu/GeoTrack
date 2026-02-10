@@ -45,7 +45,7 @@ public class GetDevicesHandler : IRequestHandler<GetDevicesQuery, IEnumerable<De
             );
 
         // 3. Join in memory
-        return devices.Select(d => 
+        return devices.Select(d =>
         {
             latestByDevice.TryGetValue(d.Id, out var loc);
             return new DeviceSummaryDto

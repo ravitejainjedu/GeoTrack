@@ -64,12 +64,12 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
             .GroupBy(p => new { p.DeviceId, p.Timestamp })
             .Select(g => g.First())
             .ToList();
-        
+
         int payloadDuplicates = validPoints.Count - uniquePoints.Count;
 
         // 3. Upsert Devices
         var distinctDeviceIds = uniquePoints.Select(p => p.DeviceId).Distinct().ToList();
-        
+
         // Fetch existing devices
         var existingDevices = await _context.Devices
             .Where(d => distinctDeviceIds.Contains(d.ExternalId))
@@ -84,7 +84,7 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
                 newDevices.Add(newDevice);
                 existingDevices[deviceId] = newDevice; // Add to local dictionary for lookup
             }
-            else 
+            else
             {
                 // Update LastSeen (optional for batch efficiency, doing it here for simplicity)
                 // If high throughput, might want to defer this or do it less frequently.
@@ -92,7 +92,7 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
                 // Updating LastSeen on every batch is OK for 500/sec on Postgres.
                 var dev = existingDevices[deviceId];
                 var latestPointForDevice = uniquePoints.Where(p => p.DeviceId == deviceId).MaxBy(p => p.Timestamp);
-                 if (latestPointForDevice != null && (dev.LastSeenAt == null || latestPointForDevice.Timestamp > dev.LastSeenAt))
+                if (latestPointForDevice != null && (dev.LastSeenAt == null || latestPointForDevice.Timestamp > dev.LastSeenAt))
                 {
                     dev.LastSeenAt = latestPointForDevice.Timestamp;
                     dev.LastLat = latestPointForDevice.Lat;
@@ -110,10 +110,10 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
         // 4. Check for existing locations (Idempotency)
         // We need to know which (DeviceId, Timestamp) tuples already exist to count them accurately as "Duplicates" logic.
         // And then insert the non-existing ones.
-        
+
         // Extract keys
         var keysToCheck = uniquePoints.Select(p => new { DeviceId = existingDevices[p.DeviceId].Id, p.Timestamp }).ToList();
-        
+
         // Query existing. Note: constructing a huge OR clause or using Contains with composite keys isn't supported directly in LINQ for tuples in all providers.
         // Alternative: Fetch all Locations for these Devices within the Timestamp range? Or just try insert and catch?
         // Requirement: "Count duplicates accurately". 
@@ -122,23 +122,23 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
         // 1. Get ranges of timestamps per device.
         // 2. Query DB for existing points in those ranges.
         // 3. Filter in memory.
-        
+
         // Optimization: If batch is small, checking individually is slow. 
         // Let's use the Range approach if possible, or just accept that "Duplicates" = Payload Duplicates + existing DB duplicates.
-        
+
         // Let's try to fetch potentially conflicting rows.
         // Since we have a list of (DeviceGuid, Timestamp), we can construct a query.
         // For 500 points/sec, doing a query might be heavy if not optimized.
         // Let's blindly insert and catch unique constraint violation? No, that fails the whole batch.
-        
+
         // Strategy: "ON CONFLICT DO NOTHING" with RETURNING.
         // EF Core 7+ `StartInsert` etc? No.
         // Let's use raw SQL for insertion to support ON CONFLICT and get efficiency.
         // But to get the COUNT of specific ignoring, we can check `(Total - Inserted)`.
-        
+
         int insertedCount = 0;
         int dbDuplicates = 0;
-        
+
         // Map to Entities
         var locationsToInsert = uniquePoints.Select(p => new Location
         {
@@ -157,24 +157,24 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
         // 1. Create a temp table or pass arrays to a raw SQL command.
         // 2. INSERT INTO Locations ... SELECT ... WHERE NOT EXISTS ...
         // 3. GET DIAGNOSTICS/Row Count.
-        
+
         // Simpler EF-friendly approach (since V1):
         // Filter out existing by querying for keys.
         // `Contains` on in-memory list of composite keys is NOT translated to SQL by EF Core usually.
         // But `context.Locations.Where(l => deviceIds.Contains(l.DeviceId) && timestamps.Contains(l.Timestamp))` returns a superset (false positives).
         // Then filtering in memory is safe and fast.
-        
+
         var deviceIds = locationsToInsert.Select(l => l.DeviceId).Distinct().ToList();
         var minTime = locationsToInsert.Min(l => l.Timestamp);
         var maxTime = locationsToInsert.Max(l => l.Timestamp);
-        
+
         var candidates = await _context.Locations
             .Where(l => deviceIds.Contains(l.DeviceId) && l.Timestamp >= minTime && l.Timestamp <= maxTime)
             .Select(l => new { l.DeviceId, l.Timestamp })
             .ToListAsync(cancellationToken);
-            
+
         var existingSet = new HashSet<(Guid, DateTime)>(candidates.Select(c => (c.DeviceId, c.Timestamp)));
-        
+
         var newLocations = new List<Location>();
         foreach (var loc in locationsToInsert)
         {
@@ -187,7 +187,7 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
                 newLocations.Add(loc);
             }
         }
-        
+
         if (newLocations.Any())
         {
             await _context.Locations.AddRangeAsync(newLocations, cancellationToken);
@@ -198,7 +198,7 @@ public class IngestTelemetryHandler : IRequestHandler<IngestTelemetryCommand, In
             // Broadcast to realtime clients (fire and forget / optimization: could be parallel)
             // Create a map of inserted locations to their original ExternalId for fast lookup
             var deviceIdMap = existingDevices.Values.ToDictionary(d => d.Id, d => d.ExternalId);
-            
+
             foreach (var loc in newLocations)
             {
                 if (deviceIdMap.TryGetValue(loc.DeviceId, out var externalId))

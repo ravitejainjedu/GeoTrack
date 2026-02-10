@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GeoTrack.Application.Features.Devices.Queries.GetDeviceHistory;
 
-public record GetDeviceHistoryQuery(string ExternalId, DateTime? From, DateTime? To, int Limit = 1000, string? Cursor = null) 
+public record GetDeviceHistoryQuery(string ExternalId, DateTime? From, DateTime? To, int Limit = 1000, string? Cursor = null)
     : IRequest<PagedHistoryResponse?>;
 
 public class GetDeviceHistoryHandler : IRequestHandler<GetDeviceHistoryQuery, PagedHistoryResponse?>
@@ -28,7 +28,7 @@ public class GetDeviceHistoryHandler : IRequestHandler<GetDeviceHistoryQuery, Pa
         var device = await _context.Devices
             .AsNoTracking()
             .FirstOrDefaultAsync(d => d.ExternalId == request.ExternalId, cancellationToken);
-        
+
         if (device == null) return null;
 
         // 2. Build Query
@@ -37,7 +37,7 @@ public class GetDeviceHistoryHandler : IRequestHandler<GetDeviceHistoryQuery, Pa
         // Date Range
         if (request.From.HasValue)
             query = query.Where(l => l.Timestamp >= request.From.Value); // Inclusive start
-        
+
         if (request.To.HasValue)
             query = query.Where(l => l.Timestamp <= request.To.Value); // Inclusive end (or exclusive? req says allow to=now. Inclusive is standard for history range).
 

@@ -22,7 +22,7 @@ namespace GeoTrack.Api.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             // Only protect POST /api/telemetry
-            if (context.Request.Method == HttpMethods.Post && 
+            if (context.Request.Method == HttpMethods.Post &&
                 context.Request.Path.StartsWithSegments("/api/telemetry"))
             {
                 if (!context.Request.Headers.TryGetValue(ApiKeyHeaderName, out var extractedApiKey))
@@ -33,7 +33,7 @@ namespace GeoTrack.Api.Middleware
                 }
 
                 var apiKey = _configuration.GetValue<string>("GeoTrack:ApiKey");
-                
+
                 if (string.IsNullOrEmpty(apiKey) || !apiKey.Equals(extractedApiKey))
                 {
                     _logger.LogWarning("Invalid API Key provided.");
